@@ -4,7 +4,7 @@ describe "chef-client fips", :windows_only do
   PATH="HKLM\\System\\CurrentControlSet\\Control\\Lsa\\FipsAlgorithmPolicy"
   before do
     @registry = Chef::Win32::Registry.new
-    @old_value = @registry.get_values("PATH")[0]
+    @old_value = @registry.get_values(PATH)[0]
     @registry.set_value(PATH, @old_value.merge({data: 1}))
   end
   after do
