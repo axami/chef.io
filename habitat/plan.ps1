@@ -66,23 +66,6 @@ function Invoke-Prepare {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
         Write-BuildLine " ** Where the hell is 'Gem'?"
 
-ruby.exe -e @"
-        require 'win32/registry'
-        require 'openssl'
-        FIPS_PATH=\"System\\CurrentControlSet\\Control\\Lsa\\FipsAlgorithmPolicy\"
-        begin
-          Win32::Registry::HKEY_LOCAL_MACHINE.open(FIPS_PATH, Win32::Registry::KEY_READ | (true ? 0x0100 : 0x0200)) do |reg|
-            reg.write('Enabled', Win32::Registry::REG_DWORD, 1)
-          end
-          OpenSSL.fips_mode = true
-          puts \"++++++++++\"
-        rescue => OpenSSL::OpenSSLError
-          Win32::Registry::HKEY_LOCAL_MACHINE.open(FIPS_PATH, Win32::Registry::KEY_READ | (true ? 0x0100 : 0x0200)) do |reg|
-            reg.write('Enabled', Win32::Registry::REG_DWORD, 0)
-          end
-          puts \"##########\"
-        end
-"@
         $gem_file = @"
 @ECHO OFF
 @"%~dp0ruby.exe" "%~dpn0" %*
