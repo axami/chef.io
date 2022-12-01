@@ -5,7 +5,7 @@ Write-Output "--- Enable Ruby 3.1"
 
 Write-Output "Register Installed Ruby Version 3.1 With Uru"
 Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
-uru 31
+uru 312
 if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
 ruby -v
 if (-not $?) { throw "Can't run Ruby. Is it installed?" }
