@@ -236,7 +236,15 @@ steps:
     executor:
       docker:
         image: rubydistros/almalinux-8:3.1
-
+- label: "Test powershells"
+  commands:
+    - .expeditor/scripts/test_powershells.ps1
+  expeditor:
+    executor:
+      windows:
+        privileged: true
+        single-use: true
+        shell: ["powershell", "-Command"]
 - label: "Functional Windows :ruby: 3.1"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
