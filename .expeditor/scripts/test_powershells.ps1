@@ -1,9 +1,11 @@
 [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine)
 
-Write-Output "Register Installed Ruby Version 2.7 With Uru"
-Start-Process "C:\Program Files (x86)\Uru\uru_rt.exe" -ArgumentList 'admin add C:\ruby27\bin' -Wait
-# We removed patch version otherwise uru fails to activate ruby as with the latest ruby releases patch version keeps getting updated.
-uru 27
+
+Write-Output "--- Enable Ruby 3.1"
+
+Write-Output "Register Installed Ruby Version 3.1 With Uru"
+Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
+uru 31
 if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
 ruby -v
 if (-not $?) { throw "Can't run Ruby. Is it installed?" }
