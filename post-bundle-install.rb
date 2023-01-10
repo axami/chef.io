@@ -9,9 +9,26 @@ puts "fixing bundle installed gems in #{gem_home}"
 # rake install since we need --conservative --minimal-deps in order to not install duplicate gems.
 #
 Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
+  puts "===Gempath: #{gempath.inspect}"
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
 
+  if gempath.match("chef-powershell")
+    path = "#{gempath}/chef-powershell"
+
+    #For now copy the windowspowershell dlls at chef/chef to gem here
+    dll_files = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
+    puts "=== dll files #{dll_files.inspect}"
+    bin_path = "#{path}/bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}"
+    puts "==== bin_path:#{bin_path}"
+
+    FileUtils.mkdir_p "#{bin_path}"
+    FileUtils.cp_r dll_files, bin_path
+
+    puts "=== bin_path contents after copying: #{Dir[bin_path + '/*']}}"
+  else
+    path = "#{gempath}"
+  end
   gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
   # FIXME: should strip any valid ruby platform off of the gem_name if it matches
 
@@ -23,6 +40,10 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   puts "re-installing #{gem_name}..."
 
   Dir.chdir(gempath) do
+    if gem_name == "chef-powershell"
+      File.delete("#{gem_name}.gemspec") if File.exist?("#{gem_name}.gemspec")
+      File.rename("template.txt", "chef-powershell.gemspec")
+    end
     system("gem build #{gem_name}.gemspec") or raise "gem build failed"
     system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
   end
