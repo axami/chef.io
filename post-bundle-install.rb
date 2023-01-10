@@ -31,7 +31,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   else
     path = "#{gempath}"
   end
-  gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
+  gem_name = File.basename(Dir["#{path}/*.gemspec"].first, ".gemspec")
   # FIXME: should strip any valid ruby platform off of the gem_name if it matches
 
   next unless gem_name
@@ -41,7 +41,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   puts "re-installing #{gem_name}..."
 
-  Dir.chdir(gempath) do
+  Dir.chdir(path) do
     if gem_name == "chef-powershell"
       File.delete("#{gem_name}.gemspec") if File.exist?("#{gem_name}.gemspec")
       File.rename("template.txt", "chef-powershell.gemspec")
