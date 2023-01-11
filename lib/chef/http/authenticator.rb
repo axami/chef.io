@@ -211,6 +211,7 @@ class Chef
           $secure_string = "#{password}" | ConvertTo-SecureString
           $secure_string | Out-File -FilePath C:\\secure_string.txt
           $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
+          $string | Out-File -FilePath C:\\decrypted_string.txt
           return $string
         CODE
         result = powershell_exec!(powershell_code).result
