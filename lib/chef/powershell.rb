@@ -18,6 +18,19 @@
 require "ffi" unless defined?(FFI)
 require_relative "json_compat"
 
+module FFI
+  class Pointer
+    attr_reader :byte_length, :debug_bytes
+    def read_utf16string_local
+      length = 0
+      length += 2 while get_bytes(length, 2) != "\x00\x00"
+      @debug_bytes = []
+      @byte_length = length
+      get_bytes(0, length).dup.tap {|b| @debug_bytes = b.bytes }.force_encoding("utf-16le").encode("utf-8")
+    end
+  end
+end
+
 class Chef
   class PowerShell
     extend FFI::Library
@@ -71,7 +84,7 @@ class Chef
       FFI.ffi_lib @dll
       FFI.attach_function :execute_powershell, :ExecuteScript, %i{string int}, :pointer
       timeout = -1 if timeout == 0 || timeout.nil?
-      execution = FFI.execute_powershell(script, timeout).read_utf16string
+      execution = FFI.execute_powershell(script, timeout).read_utf16string_local
       hashed_outcome = Chef::JSONCompat.parse(execution)
       @result = Chef::JSONCompat.parse(hashed_outcome["result"])
       @errors = hashed_outcome["errors"]
